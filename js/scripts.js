@@ -250,13 +250,29 @@ document.querySelector('[data-list-button]').addEventListener('click', () => {
 })
 
 /**
- * Find the active book based on the clicked element with a 'data-preview' attribute.
- *
- * @param {EventTarget[]} pathArray - An array of elements in the event path.
- * @param {object[]} books - An array of book objects.
- * @returns {object|null} - The active book object, or null if not found.
+ * Handles the click event on a list item.
+ * @param {Event} event - The click event.
  */
-function findActiveBook(pathArray, books) {
+function handleListItemClick(event) {
+    const active = findActiveBook(event);
+  
+    if (active) {
+      openDataListActive();
+      updateDataListBlur(active.image);
+      updateDataListImage(active.image);
+      updateDataListTitle(active.title);
+      updateDataListSubtitle(active.author, active.published);
+      updateDataListDescription(active.description);
+    }
+  }
+  
+/**
+ * Finds the active book based on the click event.
+ * @param {Event} event - The click event.
+ * @returns {Object|null} The active book object or null if not found.
+ */
+  function findActiveBook(event) {
+    const pathArray = Array.from(event.path || event.composedPath());
     let active = null;
   
     for (const node of pathArray) {
@@ -276,20 +292,63 @@ function findActiveBook(pathArray, books) {
   
     return active;
   }
+
+/**
+ * Opens the data list active element.
+ */
+  function openDataListActive() {
+    const dataListActive = document.querySelector('[data-list-active]');
+    dataListActive.open = true;
+  }
+
+/**
+ * Updates the data list blur image source.
+ * @param {string} image - The image URL.
+ */
+  function updateDataListBlur(image) {
+    const dataListBlur = document.querySelector('[data-list-blur]');
+    dataListBlur.src = image;
+  }
   
-  document.querySelector('[data-list-items]').addEventListener('click', (event) => {
-    const pathArray = Array.from(event.path || event.composedPath());
-    const active = findActiveBook(pathArray, books);
+/**
+ * Updates the data list image source.
+ * @param {string} image - The image URL.
+ */
+  function updateDataListImage(image) {
+    const dataListImage = document.querySelector('[data-list-image]');
+    dataListImage.src = image;
+  }
   
-    if (active) {
-      document.querySelector('[data-list-active]').open = true;
-      document.querySelector('[data-list-blur]').src = active.image;
-      document.querySelector('[data-list-image]').src = active.image;
-      document.querySelector('[data-list-title]').innerText = active.title;
-      document.querySelector('[data-list-subtitle]').innerText = `${authors[active.author]} (${new Date(
-        active.published
-      ).getFullYear()})`;
-      document.querySelector('[data-list-description]').innerText = active.description;
-    }
-  });
+ /**
+ * Updates the data list title text.
+ * @param {string} title - The title text.
+ */
+  function updateDataListTitle(title) {
+    const dataListTitle = document.querySelector('[data-list-title]');
+    dataListTitle.innerText = title;
+  }
+  
+/**
+ * Updates the data list subtitle text.
+ * @param {string} author - The author identifier.
+ * @param {string} published - The publication date.
+ */
+  function updateDataListSubtitle(author, published) {
+    const dataListSubtitle = document.querySelector('[data-list-subtitle]');
+    dataListSubtitle.innerText = `${authors[author]} (${new Date(published).getFullYear()})`;
+  }
+  
+/**
+ * Updates the data list description text.
+ * @param {string} description - The description text.
+ */
+  function updateDataListDescription(description) {
+    const dataListDescription = document.querySelector('[data-list-description]');
+    dataListDescription.innerText = description;
+  }
+  
+  // Adds the click event listener to the list items container.
+  document.querySelector('[data-list-items]').addEventListener('click', handleListItemClick);
+  
+
   
